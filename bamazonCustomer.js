@@ -54,11 +54,19 @@ function start() {
 function checkQuantity(params) {
   db.query(`SELECT * FROM products`, function (err, result) {
     if (err) throw err
-    if (result[params.id - 1].stock_quantity >= parseInt(params.units)) {
+    var quantityOrdered = parseInt(params.units)
+    var quantityAvailable = result[params.id - 1].stock_quantity
+    if (quantityAvailable >= quantityOrdered) {
       console.log('Order Placed')
+      updateQuantity(params.id, quantityAvailable, quantityOrdered)
     } else {
       console.log("Not enough stock")
     }
   })
+  start()
+}
+
+function updateQuantity(id, quantityAvailable, quantityOrdered) {
+  db.query(`UPDATE products SET stock_quantity = ${quantityAvailable - quantityOrdered} WHERE id = ${id}`)
   start()
 }
