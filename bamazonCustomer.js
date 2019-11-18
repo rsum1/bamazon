@@ -36,17 +36,29 @@ function displayInventory() {
 function start() {
   inquirer
     .prompt([{
-      name: 'item',
+      name: 'id',
       type: 'input',
       message: 'Please enter the ID of the item you would like to purchase:',
     },
-  {
-    name: 'units',
-    type: 'input',
-    message: 'How many units would you like to purchase?'
-  }
-  ])
+    {
+      name: 'units',
+      type: 'input',
+      message: 'How many units would you like to purchase?'
+    }
+    ])
     .then(function (answer) {
-      console.log(answer.item)
+      checkQuantity(answer)
     })
+}
+
+function checkQuantity(params) {
+  db.query(`SELECT * FROM products`, function (err, result) {
+    if (err) throw err
+    if (result[params.id - 1].stock_quantity >= parseInt(params.units)) {
+      console.log('Order Placed')
+    } else {
+      console.log("Not enough stock")
+    }
+  })
+  start()
 }
