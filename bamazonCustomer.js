@@ -25,6 +25,8 @@ db.connect(err => {
   start()
 })
 
+var orderTotal = 0
+
 function displayInventory() {
   db.query("SELECT * FROM products", (err, result) => {
     if (err) throw err
@@ -54,11 +56,24 @@ function start() {
 function checkQuantity(params) {
   db.query(`SELECT * FROM products`, function (err, result) {
     if (err) throw err
+    var chosenItem = result[params.id - 1]
     var quantityOrdered = parseInt(params.units)
-    var quantityAvailable = result[params.id - 1].stock_quantity
+    var quantityAvailable = chosenItem.stock_quantity
     if (quantityAvailable >= quantityOrdered) {
       console.log('Order Placed')
       updateQuantity(params.id, quantityAvailable, quantityOrdered)
+      console.log(`Your total is ${displayOrderTotal(chosenItem, quantityOrdered)}`)
+      inquirer
+        .prompt({
+          name: 'orderAgain',
+          type: 'list',
+          message: 'Would you like to keep shooping?',
+          choices: ['Yes', 'No']
+        })
+        .then(function (answer) {
+          answer.orderAgain === 'Yes' ? start() : db.end()
+        }
+        )
     } else {
       console.log("Not enough stock")
     }
@@ -68,5 +83,8 @@ function checkQuantity(params) {
 
 function updateQuantity(id, quantityAvailable, quantityOrdered) {
   db.query(`UPDATE products SET stock_quantity = ${quantityAvailable - quantityOrdered} WHERE id = ${id}`)
-  start()
+}
+function displayOrderTotal(chosenItem, quantityOrdered) {
+  orderTotal += chosenItem.customer_price * quantityOrdered
+  return orderTotal
 }
