@@ -35,22 +35,26 @@ function displayInventory() {
 }
 
 // function which prompts the user for what action they should take
+
 function start() {
-  inquirer
-    .prompt([{
-      name: 'id',
-      type: 'input',
-      message: 'Please enter the ID of the item you would like to purchase:',
-    },
-    {
-      name: 'units',
-      type: 'input',
-      message: 'How many units would you like to purchase?'
-    }
-    ])
-    .then(function (answer) {
-      checkQuantity(answer)
-    })
+  setTimeout(function () {
+    //your code to be executed after 1 second
+    inquirer
+      .prompt([{
+        name: 'id',
+        type: 'input',3
+        message: 'Please enter the ID of the item you would like to purchase:',
+      },
+      {
+        name: 'units',
+        type: 'input',
+        message: 'How many units would you like to purchase?'
+      }
+      ])
+      .then(function (answer) {
+        checkQuantity(answer)
+      })
+  }, 1000)
 }
 
 function checkQuantity(params) {
